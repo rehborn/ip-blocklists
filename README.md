@@ -3,5 +3,6 @@
 ## Generate
 
 ```shell
-./blocklists.sh
+uv sync
+uv run python generate.py
 ```
