@@ -1,0 +1,44 @@
+name: Cleanup Untagged Docker Images
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+
+env:
+  python-version: 3.13
+
+jobs:
+  cleanup:
+    name: Cleanup Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ env.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install uv
+          uv sync --locked --all-groups
+
+      - name: Generate
+        run: uv run python generate.py
+
+      - name: Compress Dist
+        run: |
+          tar cf payload.tar -C dist/ .
+
+      - name: Deploy
+        run: |
+          curl -X POST -T payload.tar ${{ vars.CANARY_URL }}/webhook/page/${{ secrets.CANARY_TOKEN }}
