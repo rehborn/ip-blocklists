@@ -1,0 +1,34 @@
+sources:
+  # Anthropic: https://docs.anthropic.com/en/api/ip-addresses
+  anthropic-bot:
+    ipv4:
+      - 160.79.104.0/23
+    ipv6:
+      - 2607:6bc0::/48
+
+  # OpenAI: https://platform.openai.com/docs/bots
+  openai-searchbot:
+    json: https://openai.com/searchbot.json
+
+  openai-gptbot:
+    json: https://openai.com/gptbot.json
+
+  # Perplexity: https://docs.perplexity.ai/guides/bots
+  perplexity-bot:
+    json: https://www.perplexity.ai/perplexitybot.json
+
+  perplexity-user:
+    json: https://www.perplexity.ai/perplexity-user.json
+
+  # https://commoncrawl.org/ccbot
+  commoncrawl-bot:
+    json: https://index.commoncrawl.org/ccbot.json
+
+  aws:
+    json: https://ip-ranges.amazonaws.com/ip-ranges.json
+
+    ipv4_prefix: prefixes
+    ipv4_field: ip_prefix
+
+    ipv6_prefix: ipv6_prefixes
+    ipv6_field: ipv6_prefix
