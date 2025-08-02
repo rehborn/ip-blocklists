@@ -1,4 +1,4 @@
-name: Cleanup Untagged Docker Images
+name: Generate Blocklists
 
 on:
   workflow_dispatch:
