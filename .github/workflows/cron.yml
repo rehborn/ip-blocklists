@@ -12,8 +12,8 @@ env:
   python-version: 3.13
 
 jobs:
-  cleanup:
-    name: Cleanup Docker Images
+  generate:
+    name: Generate Blocklists
     runs-on: ubuntu-latest
 
     steps:
