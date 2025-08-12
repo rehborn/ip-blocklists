@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import os
+import socket
 from datetime import datetime
 
 import yaml
@@ -10,6 +11,30 @@ import tarfile
 
 config = yaml.load(open('config.yml', 'r'), Loader=yaml.SafeLoader)
 
+
+def whois_parse_routes(whois_server: str, query: str) -> dict:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(30)
+    s.connect((whois_server, 43))
+    s.send(bytes(query, "utf-8") + b"\r\n")
+    response = b""
+    while True:
+        d = s.recv(4096)
+        response += d
+        if not d:
+            break
+    s.close()
+    result = response.decode("utf-8")
+
+    routes = {4: [], 6: []}
+    for x in result.split("\n"):
+        if x.startswith('route'):
+            route = x.split(' ')[-1]
+            if x.startswith('route:'):
+                routes[4].append(route)
+            elif x.startswith('route6:'):
+                routes[6].append(route)
+    return routes
 
 def generate_blocklists():
     for source, attrs in config['sources'].items():
@@ -30,6 +55,11 @@ def generate_blocklists():
                 field = attrs.get(f'ipv{i}_field', f'ipv{i}Prefix')
 
                 ipv[i].extend([i[field] for i in result[prefix] if i.get(field)])
+
+        if 'whois' in attrs:
+            whois_result = whois_parse_routes(attrs['whois'], attrs['query'])
+            for i in [4, 6]:
+                ipv[i].extend(whois_result[i])
 
         print(f'{source}: {len(ipv[4])} IPv4 - | {len(ipv[6])} IPv6')
 
